@@ -229,6 +229,7 @@ class Downloader
     private function do_download()
     {
         $cmd = "youtube-dl";
+        $cmd .= " --no-check-certificate";
         $cmd .= " -o " . $this->download_path . "/";
         $cmd .= escapeshellarg("%(title)s-%(uploader)s.%(ext)s");
 
