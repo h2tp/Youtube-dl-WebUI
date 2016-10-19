@@ -22,6 +22,12 @@ class Downloader
     private $audio_only = false;
 
     /**
+     * Download quality
+     * @var string
+     */
+    private $quality = false;
+
+    /**
      * Tableau pour contenir les éventuelles erreurs
      * @var array
      */
@@ -37,12 +43,19 @@ class Downloader
      * Constructeur de la classe Downloader
      * @param array   $post       Array contenant les fichiers à DL
      * @param boolean $audio_only Download only audio
+     * @param string $quality quality for download
      */
-    public function __construct($post, $audio_only)
+    public function __construct($post, $audio_only, $quality)
     {
         $this->config = require dirname(__DIR__) . '/config/config.php';
 
         $this->download_path = (new FileHandler())->get_downloads_folder();
+
+        $valid_qualities = array("all", "false", "best", "worst", "mp4", "flv");
+
+        if (in_array($quality,$valid_qualities)) {
+            $this->quality = $quality;
+        }
 
         $this->audio_only = $audio_only;
         $this->urls       = explode(",", $post);
@@ -232,6 +245,14 @@ class Downloader
         $cmd .= " --no-check-certificate";
         $cmd .= " -o " . $this->download_path . "/";
         $cmd .= escapeshellarg("%(title)s-%(uploader)s.%(ext)s");
+
+        if ($this->quality != "false" && $this->quality != "all") {
+            $cmd .= " -f " . $this->quality;
+        }
+
+        if ($this->quality == "all") {
+            $cmd .= " --all-formats";
+        }
 
         if ($this->audio_only) {
             $cmd .= " -x --extract-audio --audio-format mp3";

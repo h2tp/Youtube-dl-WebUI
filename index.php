@@ -18,12 +18,17 @@ if (!$session->is_logged_in()) {
 
     if (isset($_POST['urls']) && !empty($_POST['urls'])) {
         $audio_only = false;
+		$quality = false;
 
         if (isset($_POST['audio']) && !empty($_POST['audio'])) {
-            $audio_only = true;
-        }
+			$audio_only = true;
+		}
 
-        $downloader = new Downloader($_POST['urls'], $audio_only);
+		if (isset($_POST['quality']) && !empty($_POST['quality'])) {
+			$quality = $_POST['quality'];
+		}
+
+        $downloader = new Downloader($_POST['urls'], $audio_only, $quality);
         
         if (!isset($_SESSION['errors'])) {
             header("Location: index.php");
@@ -48,6 +53,20 @@ if (!$session->is_logged_in()) {
 						<div class="checkbox">
 							<label>
 								<input type="checkbox" name="audio">Audio Only
+							</label>
+						</div>
+					</div>
+					<div class="col-md-2">
+						<div class="select">
+							<label> quality:
+								<select name="quality">
+									<option value="false">no change</option>
+									<option>best</option>
+									<option>worst</option>
+									<option>mp4</option>
+									<option value="all">all formats</option>
+									<option>flv</option>
+								</select>
 							</label>
 						</div>
 					</div>
